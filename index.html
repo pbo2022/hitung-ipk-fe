@@ -5,8 +5,90 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Data KRS dan IPK Mahasiswa</title>
     <style>
-        /* CSS styles remain the same */
+        body {
+            font-family: Arial, Helvetica, sans-serif;
+            background-color: #f4f4f9;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+        }
+        .container {
+            background-color: #F5F5F7;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
+            max-width: 500px;
+            width: 100%;
+            text-align: center;
+        }
+        h2 {
+            color: #333;
+            margin-bottom: 25px;
+        }
+        #searchForm {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+        label {
+            font-size: 17px;
+            color: #555;
+            text-align: left;
+        }
+        input[type="text"],
+        input[type="number"] {
+            padding: 10px;
+            font-size: 15px;
+            border: 2px solid #ddd;
+            border-radius: 5px;
+            width: 95%;
+        }
+        button {
+            padding: 10px;
+            color: #fff;
+            margin-top: 30px;
+            font-size: 20px;
+            background-color: #8967B3;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.7s ease;
+        }
+        button:hover {
+            font-size: 21px;
+            font-weight: bold;
+            background-color: #624E88;
+        }
+        #result {
+            margin-top: 20px;
+            text-align: left;
+        }
+        #krsTable {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 10px;
+        }
+        #krsTable th, #krsTable td {
+            padding: 12px;
+            border: 1px solid #ddd;
+            text-align: left;
+        }
+        #krsTable th {
+            background-color: #624E88;
+            color: white;
+        }
+        #krsTable tr:nth-child(even) {
+            background-color: #f2f2f2;
+        }
+        p {
+            margin: 8px 0;
+            font-weight: bold;
+            color: #333;
+        }
     </style>
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
 </head>
 <body>
     <div class="container">
@@ -44,17 +126,21 @@
             const nim = document.getElementById('nim').value;
             const semester = document.getElementById('semester').value;
 
-            // Menggunakan fetch API untuk request ke server
-            fetch(`https://hitung-ipk-cv5g-ol1qz3pz6.vercel.app/krs?nim=${nim}&semester=${semester}`)
-                .then(response => response.json())
-                .then(data => {
-                    if (data.success) {
-                        displayData(data.data);
-                    } else {
-                        alert('Data tidak ditemukan');
-                    }
-                })
-                .catch(error => console.error('Error:', error));
+            axios.get(`http://127.0.0.1:8001/krs`, {
+                params: {
+                    nim: nim,
+                    semester: semester
+                }
+            })
+            .then(response => {
+                const data = response.data;
+                if (data.success) {
+                    displayData(data.data);
+                } else {
+                    alert('Data tidak ditemukan');
+                }
+            })
+            .catch(error => console.error('Error:', error));
         }
 
         function displayData(data) {
