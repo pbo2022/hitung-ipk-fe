@@ -152,7 +152,6 @@
             const nim = document.getElementById('nim').value;
             const semester = document.getElementById('semester').value;
 
-            // Menggunakan fetch API untuk request ke server
             fetch(`https://hitung-ipk-cv5g.vercel.app/krs?nim=${nim}&semester=${semester}`)
             .then(response => {
                 Swal.close();
