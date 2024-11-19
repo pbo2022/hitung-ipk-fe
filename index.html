@@ -152,17 +152,22 @@
             const nim = document.getElementById('nim').value;
             const semester = document.getElementById('semester').value;
 
-            fetch(https://hitung-ipk-cv5g.vercel.app/krs?nim=${nim}&semester=${semester})
+            fetch(`https://hitung-ipk-cv5g.vercel.app/krs?nim=${nim}&semester=${semester}`)
             .then(response => {
-                Swal.close();
-                const data = response.data;
+                Swal.close(); // Menutup popup loading
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+                return response.json(); // Mengurai response ke JSON
+            })
+            .then(data => {
                 if (data.success) {
                     Swal.fire({
                         icon: 'success',
                         title: 'Data Ditemukan',
                         text: 'Data KRS dan IPK berhasil dimuat!'
                     });
-                    displayData(data.data);
+                    displayData(data.data); // Memanggil fungsi untuk menampilkan data
                 } else {
                     Swal.fire({
                         icon: 'error',
@@ -178,7 +183,7 @@
                     title: 'Terjadi Kesalahan',
                     text: 'Tidak dapat mengambil data. Coba lagi nanti.'
                 });
-                console.error('Error:', error);
+                console.error('Fetch Error:', error); // Menampilkan error di konsol
             });
         }
 
