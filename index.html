@@ -126,7 +126,7 @@
             const semester = document.getElementById('semester').value;
 
             // Menggunakan fetch API untuk request ke server
-            fetch(`https://hitung-ipk-cv5g-ol1qz3pz6.vercel.app/krs?nim=${nim}&semester=${semester}`)
+            fetch(`https://hitung-ipk-cv5g.vercel.app/krs?nim=${nim}&semester=${semester}`)
                 .then(response => response.json())
                 .then(data => {
                     if (data.success) {
