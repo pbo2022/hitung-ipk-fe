@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Data KRS dan IPK Mahasiswa</title>
-      <style>
+    <style>
         body {
             font-family: Arial, Helvetica, sans-serif;
             background-color: #f4f4f9;
@@ -96,6 +96,7 @@
         }
     </style>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
 </head>
 <body>
     <div class="container">
@@ -142,32 +143,35 @@
                         <th>Nilai</th>
                     </tr>
                 </thead>
-                <tbody></tbody>
+                <tbody>
+                </tbody>
             </table>
+            <!-- <p id="ips">IPS: </p>
+            <p id="ipk">IPK: </p> -->
         </div>
     </div>
-    
+
     <script>
         function fetchData() {
             const nim = document.getElementById('nim').value;
             const semester = document.getElementById('semester').value;
 
-            fetch(`https://hitung-ipk-cv5g.vercel.app/krs?nim=${nim}&semester=${semester}`)
-            .then(response => {
-                Swal.close(); // Menutup popup loading
-                if (!response.ok) {
-                    throw new Error(`HTTP error! status: ${response.status}`);
+            axios.get(`https://hitung-ipk-cv5g.vercel.app/krs`, {
+                params: {
+                    nim: nim,
+                    semester: semester
                 }
-                return response.json(); // Mengurai response ke JSON
             })
-            .then(data => {
+            .then(response => {
+                Swal.close();
+                const data = response.data;
                 if (data.success) {
                     Swal.fire({
                         icon: 'success',
                         title: 'Data Ditemukan',
                         text: 'Data KRS dan IPK berhasil dimuat!'
                     });
-                    displayData(data.data); // Memanggil fungsi untuk menampilkan data
+                    displayData(data.data);
                 } else {
                     Swal.fire({
                         icon: 'error',
@@ -183,29 +187,29 @@
                     title: 'Terjadi Kesalahan',
                     text: 'Tidak dapat mengambil data. Coba lagi nanti.'
                 });
-                console.error('Fetch Error:', error); // Menampilkan error di konsol
+                console.error('Error:', error);
             });
         }
 
         function displayData(data) {
             const tableBody = document.querySelector('#krsTable tbody');
-            tableBody.innerHTML = ''; // Clear previous data
+            tableBody.innerHTML = '';
 
             data.krs.forEach(item => {
                 const mataKuliah = item.mata_kuliah || {};
-                const row = <tr>
+                const row = `<tr>
                     <td>${mataKuliah.id_mk || '-'}</td>
                     <td>${mataKuliah.nama_mk || '-'}</td>
                     <td>${mataKuliah.sks || '-'}</td>
                     <td>${item.nilai}</td>
-                </tr>;
+                </tr>`;
                 tableBody.innerHTML += row;
             });
 
-            document.getElementById('nama').textContent = ${data.mahasiswa.nama};
-            document.getElementById('nim_mhs').textContent = ${data.mahasiswa.nim};
-            document.getElementById('ips').textContent = ${data.ips};
-            document.getElementById('ipk').textContent = ${data.ipk};
+            document.getElementById('nama').textContent = `${data.mahasiswa.nama}`;
+            document.getElementById('nim_mhs').textContent = `${data.mahasiswa.nim}`;
+            document.getElementById('ips').textContent = `${data.ips}`;
+            document.getElementById('ipk').textContent = `${data.ipk}`;
             document.getElementById('result').style.display = 'block';
             document.getElementById('result2').style.display = 'block';
         }
