@@ -149,38 +149,61 @@
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script>
         function fetchData() {
-            const nim = document.getElementById('nim').value;
-            const semester = document.getElementById('semester').value;
+    const nim = document.getElementById('nim').value.trim();
+    const semester = document.getElementById('semester').value.trim();
 
-            fetch(`https://hitung-ipk-cv5g.vercel.app/krs?nim=${nim}&semester=${semester}`)
-            .then(response => {
-                Swal.close();
-                const data = response.data;
-                if (data.success) {
-                    Swal.fire({
-                        icon: 'success',
-                        title: 'Data Ditemukan',
-                        text: 'Data KRS dan IPK berhasil dimuat!'
-                    });
-                    displayData(data.data);
-                } else {
-                    Swal.fire({
-                        icon: 'error',
-                        title: 'Data Tidak Ditemukan',
-                        text: 'Mohon periksa NIM atau Semester yang dimasukkan.'
-                    });
-                }
-            })
-            .catch(error => {
-                Swal.close();
+    if (!nim || !semester) {
+        Swal.fire({
+            icon: 'warning',
+            title: 'Input Tidak Lengkap',
+            text: 'Harap isi NIM dan Semester sebelum melanjutkan.'
+        });
+        return;
+    }
+
+    Swal.fire({
+        title: 'Memuat Data...',
+        text: 'Mohon tunggu sementara data sedang dimuat.',
+        allowOutsideClick: false,
+        didOpen: () => {
+            Swal.showLoading();
+        }
+    });
+
+    fetch(`https://hitung-ipk-cv5g.vercel.app/krs?nim=${nim}&semester=${semester}`)
+        .then(response => {
+            if (!response.ok) {
+                throw new Error(`HTTP error! status: ${response.status}`);
+            }
+            return response.json(); // Parse JSON dari respons
+        })
+        .then(data => {
+            Swal.close(); // Tutup Swal loading
+            if (data.success) {
+                Swal.fire({
+                    icon: 'success',
+                    title: 'Data Ditemukan',
+                    text: 'Data KRS dan IPK berhasil dimuat!'
+                });
+                displayData(data.data); // Tampilkan data
+            } else {
                 Swal.fire({
                     icon: 'error',
-                    title: 'Terjadi Kesalahan',
-                    text: 'Tidak dapat mengambil data. Coba lagi nanti.'
+                    title: 'Data Tidak Ditemukan',
+                    text: 'Mohon periksa NIM atau Semester yang dimasukkan.'
                 });
-                console.error('Error:', error);
+            }
+        })
+        .catch(error => {
+            Swal.close();
+            Swal.fire({
+                icon: 'error',
+                title: 'Terjadi Kesalahan',
+                text: 'Tidak dapat mengambil data. Coba lagi nanti.'
             });
-        }
+            console.error('Error:', error);
+        });
+}
 
         function displayData(data) {
             const tableBody = document.querySelector('#krsTable tbody');
